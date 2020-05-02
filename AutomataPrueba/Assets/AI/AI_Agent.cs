@@ -5,8 +5,6 @@ using UnityEngine.Assertions;
 
 public class AI_Agent : MonoBehaviour
 {
-
-    
     private stateFunction actualState;
     public delegate void stateFunction();
     public delegate bool conditionFunction();
@@ -24,38 +22,33 @@ public class AI_Agent : MonoBehaviour
 
     float angleVelocity = 15.0f;
     float velocity = 1.0f;
+
     public void idleF()
     {
 
     }
+
     private void Awake()
     {
-        
         states = new Dictionary<string, stateFunction>();
     }
+
     public virtual void updateAgent()
     {
         actualState();
-      
-
-        
     }
 
-   
 
     bool calculateDistance()
     {
-      
         return true;
     }
 
     protected stateFunction getState(string stateName)
     {
-       
         if (states.ContainsKey(stateName))
         {
             return states[stateName];
-
         }
      
         Debug.LogError("WRONG STATE");
@@ -69,6 +62,7 @@ public class AI_Agent : MonoBehaviour
             Debug.LogError("Repeated Key Value");
             return;
         }
+
         states[stateName] = func;
     }
     
@@ -76,5 +70,4 @@ public class AI_Agent : MonoBehaviour
     {
         actualState = func;
     }
- 
 }

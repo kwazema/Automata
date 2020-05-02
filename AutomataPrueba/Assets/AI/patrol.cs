@@ -8,9 +8,11 @@ public class patrol : AI_Agent
 {
     [SerializeField]
     Transform target;
-    Vector3[] waypoints;
+    public Transform[] waypoints;
     public int maxWaypoints = 10;
     public float angularVelocity = 0.5f;
+    [SerializeField]
+    float speed = 2;
 
     int actualWaypoint = 0;
     float halfAngle = 30.0f;
@@ -18,29 +20,31 @@ public class patrol : AI_Agent
     Color gizmoColor = Color.white;
 
 
-    void initPositions()
-    {
-        List<Vector3> waypointsList = new List<Vector3>();
-        float anglePartition = 360.0f / (float)maxWaypoints;
-        for (int i = 0; i < maxWaypoints; ++i)
-        {
-            Vector3 v = transform.position + 5 * Vector3.forward * Mathf.Cos(i * anglePartition)
-                + 5 * Vector3.right * Mathf.Sin(i * anglePartition);
-            waypointsList.Add(v);
+    //void initPositions()
+    //{
+    //    List<Vector3> waypointsList = new List<Vector3>();
+    //    float anglePartition = 360.0f / (float)maxWaypoints;
 
-        }
-        waypoints = waypointsList.ToArray();
-    }
+    //    for (int i = 0; i < maxWaypoints; ++i)
+    //    {
+    //        Vector3 v = transform.position + 5 * Vector3.forward * Mathf.Cos(i * anglePartition)
+    //            + 5 * Vector3.right * Mathf.Sin(i * anglePartition);
+    //        waypointsList.Add(v);
+
+    //    }
+
+    //    waypoints = waypointsList.ToArray();
+    //}
 
     private void OnDrawGizmos()
     {
-        if (UnityEditor.EditorApplication.isPlaying)
-        {
-            for (int i = 0; i < maxWaypoints; i++)
-            {
-                Gizmos.DrawSphere(waypoints[i], 1.0f);
-            }
-        }
+        //if (UnityEditor.EditorApplication.isPlaying)
+        //{
+        //    for (int i = 0; i < maxWaypoints; i++)
+        //    {
+        //        Gizmos.DrawSphere(waypoints[i].position, 1.0f);
+        //    }
+        //}
 
 
         Vector3 rightSide = Quaternion.Euler(Vector3.up * halfAngle) * transform.forward * coneDistance;
@@ -59,16 +63,16 @@ public class patrol : AI_Agent
         Gizmos.DrawLine(transform.position + rightSide,
         transform.position + transform.forward * coneDistance);
 
-        Gizmos.color = gizmoColor;
-        Gizmos.DrawSphere(transform.position + Vector3.up * 2, 0.5f);
+        //Gizmos.color = gizmoColor;
+        //Gizmos.DrawSphere(transform.position + Vector3.up * 2, 0.5f);
     }
 
     void idle()
     {
 
+            //setState(getState("goto"));
         if (Input.GetKeyDown(KeyCode.A))
         {
-            setState(getState("goto"));
         }
     }
 
@@ -86,16 +90,16 @@ public class patrol : AI_Agent
             transform.eulerAngles.y + vel,
             transform.eulerAngles.z);
 
-        transform.position += transform.forward * Time.deltaTime;
+        transform.position += transform.forward * Time.deltaTime * speed;
     }
 
     void goToWaypoint()
     {
 
 
-        goTo(waypoints[actualWaypoint]);
+        goTo(waypoints[actualWaypoint].position);
 
-        if (Vector3.Distance(transform.position, waypoints[actualWaypoint]) <= 1.0f)
+        if (Vector3.Distance(transform.position, waypoints[actualWaypoint].position) <= 1.0f)
         {
             setState(getState("nextwp"));
         }
@@ -110,7 +114,9 @@ public class patrol : AI_Agent
 
     void calculateNextWaypoint()
     {
-        actualWaypoint = (++actualWaypoint) % waypoints.Length;
+        //actualWaypoint = (++actualWaypoint) % waypoints.Length;
+        //actualWaypoint = ++actualWaypoint;
+        actualWaypoint = (actualWaypoint == waypoints.Length - 1) ? 0 : ++actualWaypoint;
         setState(getState("goto"));
 
     }
@@ -134,11 +140,11 @@ public class patrol : AI_Agent
             halfAngle /= 2;
             setState(getState("goto"));
         }
-        else if (Vector3.Distance(transform.position, target.position) <= 4f)
-        {
-            gizmoColor = Color.red;
-            setState(getState("idlewar"));
-        }
+        //else if (Vector3.Distance(transform.position, target.position) <= 4f)
+        //{
+        //    gizmoColor = Color.red;
+        //    setState(getState("idlewar"));
+        //}
     }
 
 
@@ -209,18 +215,18 @@ public class patrol : AI_Agent
     void Start()
     {
  
-        initPositions();
+        //initPositions();
         actualWaypoint = 0;
         initState("idle", idle);
         //CreateLink("idle", "goto", distanceToPlayer);
-        initState("goto", goToWaypoint);
         initState("nextwp", calculateNextWaypoint);
+        initState("goto", goToWaypoint);
         initState("player", goToPlayer);
-        initState("idlewar", idleWar);
-        initState("chooseOrbit", chooseOrbit);
-        initState("OrbitRight", OrbitRight);
+        //initState("idlewar", idleWar);
+        //initState("chooseOrbit", chooseOrbit);
+        //initState("OrbitRight", OrbitRight);
 
-        setState(getState("idle"));
+        setState(getState("goto"));
     }
 
     // Update is called once per frame

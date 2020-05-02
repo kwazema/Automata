@@ -10,6 +10,7 @@ public class life : DispatchableComponent
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
+
         if(myLife < 50.0f)
         {
             Gizmos.color = Color.yellow;
@@ -18,7 +19,7 @@ public class life : DispatchableComponent
         {
             Gizmos.color = Color.red;
         }
-       Gizmos.DrawSphere(transform.position + Vector3.up * 1.0f, 0.5f);
+       Gizmos.DrawSphere(transform.position + Vector3.up * 10.0f, 0.5f);
      
        // UnityEditor.Handles.Label(transform.position + Vector3.up, myLife.ToString());
     }
